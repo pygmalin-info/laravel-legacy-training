@@ -8,10 +8,55 @@ use App\Models\Member;
 
 class MemberController extends Controller
 {
-    // 一覧
+    // 一覧・検索
     public function index(Request $request)
     {
-        $members = Member::where('status', '<>', 2)->orderBy('id', 'desc')->paginate(20);
+        $keyword = $request->keyword;
+        $status = $request->status;
+        $pref = $request->pref;
+
+        $query = Member::query();
+
+        // キーワード検索（名前・カナ・メール）
+        if ($keyword != '') {
+            $query->where('name', 'like', '%' . $keyword . '%')
+                  ->orWhere('name_kana', 'like', '%' . $keyword . '%')
+                  ->orWhere('email', 'like', '%' . $keyword . '%');
+        }
+
+        // ステータスで絞り込み
+        if ($status != '') {
+            $query->where('status', $status);
+        } else {
+            // 退会者は基本出さない
+            $query->where('status', '<>', 2);
+        }
+
+        // 都道府県で絞り込み
+        if ($pref != '') {
+            $query->where('prefecture', $pref);
+        }
+
+        // 電話番号でも検索できるようにした（あとから追加した機能）
+        if ($request->phone != '') {
+            $tmp = DB::select("select id from members where phone like '%" . $request->phone . "%'");
+            $ids = [];
+            foreach ($tmp as $t) {
+                $ids[] = $t->id;
+            }
+            $query->whereIn('id', $ids);
+        }
+
+        // 並び替え
+        $sort = $request->sort;
+        $order = $request->order;
+        if ($sort != '') {
+            $query->orderBy($sort, $order);
+        } else {
+            $query->orderBy('id', 'desc');
+        }
+
+        $members = $query->paginate(20);
 
         // 一覧に「同じ都道府県の会員数」を出す
         foreach ($members as $m) {

@@ -8,15 +8,28 @@
     </div>
 </div>
 
+<form action="/members" method="get" class="search-form">
+    <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="氏名・カナ・メール">
+    <input type="text" name="phone" value="{{ request('phone') }}" placeholder="電話番号">
+    <select name="status">
+        <option value="">ステータス</option>
+        <option value="0" {{ request('status')==='0' ? 'selected' : '' }}>仮登録</option>
+        <option value="1" {{ request('status')==='1' ? 'selected' : '' }}>有効</option>
+        <option value="2" {{ request('status')==='2' ? 'selected' : '' }}>退会</option>
+    </select>
+    <input type="text" name="pref" value="{{ request('pref') }}" placeholder="都道府県">
+    <button type="submit" class="btn">検索</button>
+</form>
+
 <table class="list">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>氏名</th>
+            <th><a href="/members?sort=id&order=asc">ID</a></th>
+            <th><a href="/members?sort=name&order=asc">氏名</a></th>
             <th>メールアドレス</th>
             <th>都道府県</th>
             <th>同県会員</th>
-            <th>ランク</th>
+            <th><a href="/members?sort=rank&order=asc">ランク</a></th>
             <th>ステータス</th>
             <th>操作</th>
         </tr>
