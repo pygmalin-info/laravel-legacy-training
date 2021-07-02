@@ -5,6 +5,7 @@
     <h1>会員一覧</h1>
     <div>
         <a href="/members/create" class="btn btn-primary">新規登録</a>
+        <a href="/members/csv" class="btn">CSV出力</a>
     </div>
 </div>
 

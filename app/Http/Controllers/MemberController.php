@@ -167,6 +167,54 @@ class MemberController extends Controller
         return redirect('/members')->with('message', '会員を削除しました');
     }
 
+    // CSV出力
+    public function csv(Request $request)
+    {
+        $members = Member::where('status', '<>', 2)->orderBy('id', 'asc')->get();
+
+        $csv = '';
+        $csv .= "ID,氏名,カナ,メールアドレス,電話番号,都道府県,ランク,ステータス\n";
+
+        foreach ($members as $m) {
+            // ランク表示
+            $rank = '';
+            if ($m->rank == 1) {
+                $rank = '通常';
+            }
+            if ($m->rank == 2) {
+                $rank = 'ゴールド';
+            }
+            if ($m->rank == 3) {
+                $rank = 'プラチナ';
+            }
+
+            // ステータス表示
+            $st = '';
+            if ($m->status == 0) {
+                $st = '仮登録';
+            }
+            if ($m->status == 1) {
+                $st = '有効';
+            }
+
+            $csv .= $m->id . ',';
+            $csv .= $m->name . ',';
+            $csv .= $m->name_kana . ',';
+            $csv .= $m->email . ',';
+            $csv .= $m->phone . ',';
+            $csv .= $m->prefecture . ',';
+            $csv .= $rank . ',';
+            $csv .= $st . "\n";
+        }
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="members.csv"',
+        ];
+
+        return response($csv, 200, $headers);
+    }
+
     // 電話番号を整形する（使っていない）
     private function formatPhone($phone)
     {

@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/members', [MemberController::class, 'index'])->name('members.index');
     Route::get('/members/create', [MemberController::class, 'create'])->name('members.create');
     Route::post('/members', [MemberController::class, 'store'])->name('members.store');
+    Route::get('/members/csv', [MemberController::class, 'csv'])->name('members.csv');
     Route::get('/members/{id}', [MemberController::class, 'show'])->name('members.show');
     Route::get('/members/{id}/edit', [MemberController::class, 'edit'])->name('members.edit');
     Route::put('/members/{id}', [MemberController::class, 'update'])->name('members.update');
