@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Member;
 
 class MemberController extends Controller
@@ -132,6 +133,20 @@ class MemberController extends Controller
 
         $member->save();
 
+        // 登録完了メール
+        if ($member->status == 1) {
+            $data = [
+                'name' => $member->name,
+                'body' => 'ご登録ありがとうございます。',
+            ];
+            Mail::send('emails.notification', $data, function ($mail) use ($member) {
+                $mail->to($member->email);
+                $mail->from('noreply@example.com', '会員管理システム');
+                $mail->bcc('admin@example.com');
+                $mail->subject('会員登録が完了しました');
+            });
+        }
+
         return redirect('/members')->with('message', '会員を登録しました');
     }
 
@@ -213,6 +228,28 @@ class MemberController extends Controller
         ];
 
         return response($csv, 200, $headers);
+    }
+
+    // 個別メール送信
+    public function sendMail(Request $request, $id)
+    {
+        $member = Member::find($id);
+        if ($member == null) {
+            abort(404);
+        }
+
+        $data = [
+            'name' => $member->name,
+            'body' => $request->body,
+        ];
+        Mail::send('emails.notification', $data, function ($mail) use ($member) {
+            $mail->to($member->email);
+            $mail->from('noreply@example.com', '会員管理システム');
+            $mail->bcc('admin@example.com');
+            $mail->subject('会員管理システムからのお知らせ');
+        });
+
+        return redirect('/members/' . $id)->with('message', 'メールを送信しました');
     }
 
     // 電話番号を整形する（使っていない）

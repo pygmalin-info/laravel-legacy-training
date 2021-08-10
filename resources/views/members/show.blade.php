@@ -48,5 +48,14 @@
     <tr><th>メモ</th><td>{!! $member->memo !!}</td></tr>
 </table>
 
+<div class="mail-box">
+    <h2>メール送信</h2>
+    <form action="/members/{{ $member->id }}/mail" method="post">
+        @csrf
+        <textarea name="body" placeholder="本文"></textarea>
+        <button type="submit" class="btn btn-primary">このメンバーに送信</button>
+    </form>
+</div>
+
 <p><a href="/members">← 一覧へ戻る</a></p>
 @endsection

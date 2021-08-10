@@ -28,4 +28,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/members/{id}/edit', [MemberController::class, 'edit'])->name('members.edit');
     Route::put('/members/{id}', [MemberController::class, 'update'])->name('members.update');
     Route::delete('/members/{id}', [MemberController::class, 'destroy'])->name('members.destroy');
+    Route::post('/members/{id}/mail', [MemberController::class, 'sendMail'])->name('members.mail');
 });
