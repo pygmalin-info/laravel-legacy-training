@@ -46,6 +46,9 @@
         </td>
     </tr>
     <tr><th>メモ</th><td>{!! $member->memo !!}</td></tr>
+    @if ($member->avatar)
+    <tr><th>アバター</th><td><img src="/{{ $member->avatar }}" class="avatar"></td></tr>
+    @endif
 </table>
 
 <div class="mail-box">

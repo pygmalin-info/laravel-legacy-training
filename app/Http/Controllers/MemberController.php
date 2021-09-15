@@ -78,6 +78,7 @@ class MemberController extends Controller
             abort(404);
         }
 
+        // 同県の会員数
         $cnt = DB::table('members')->where('prefecture', $member->prefecture)->count();
 
         return view('members.show', ['member' => $member, 'cnt' => $cnt]);
@@ -130,6 +131,14 @@ class MemberController extends Controller
 
         // 登録直後はまだ仮登録
         $member->status = 0;
+
+        // アバター画像
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $name = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/avatars'), $name);
+            $member->avatar = 'uploads/avatars/' . $name;
+        }
 
         $member->save();
 
@@ -258,4 +267,13 @@ class MemberController extends Controller
         $tmp = str_replace('-', '', $phone);
         return substr($tmp, 0, 3) . '-' . substr($tmp, 3, 4) . '-' . substr($tmp, 7);
     }
+
+    // 郵便番号から住所を引く（昔の名残。今は使っていない）
+    // private function searchAddress($zip)
+    // {
+    //     $url = 'http://zipcloud.ibsnet.co.jp/api/search?zipcode=' . $zip;
+    //     $json = file_get_contents($url);
+    //     $data = json_decode($json, true);
+    //     return $data['results'][0]['address1'];
+    // }
 }

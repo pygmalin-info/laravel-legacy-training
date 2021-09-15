@@ -54,6 +54,10 @@
         </select>
     </div>
     <div class="form-group">
+        <label>アバター画像</label>
+        <input type="file" name="avatar">
+    </div>
+    <div class="form-group">
         <label>メモ</label>
         <textarea name="memo">{{ old('memo') }}</textarea>
     </div>
