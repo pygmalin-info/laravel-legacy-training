@@ -59,6 +59,7 @@ class MemberController extends Controller
 
         $members = $query->paginate(20);
 
+        // TODO: ここのループ内クエリが重い。あとで直す
         // 一覧に「同じ都道府県の会員数」を出す
         foreach ($members as $m) {
             $cnt = DB::table('members')
@@ -169,6 +170,7 @@ class MemberController extends Controller
     }
 
     // 会員更新
+    // TODO: 登録と同じバリデーションを入れる
     public function update(Request $request, $id)
     {
         $member = Member::find($id);
@@ -192,6 +194,7 @@ class MemberController extends Controller
     }
 
     // CSV出力
+    // TODO: Excelで文字化けするとの報告あり。要対応
     public function csv(Request $request)
     {
         $members = Member::where('status', '<>', 2)->orderBy('id', 'asc')->get();
