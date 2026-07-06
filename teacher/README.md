@@ -1,0 +1,25 @@
+# teacher/（指導者用・解答）
+
+> ⚠️ **受講生はこのフォルダを見ないでください。**
+> ここには全バグの原因・修正コード・リファクタリング模範解答・レビュー観点をまとめています。
+
+## 目次
+
+| ファイル | 内容 |
+|----------|------|
+| [bug-list.md](bug-list.md) | バグ14件の一覧・症状・原因・修正コード（Issue との対応表つき） |
+| [refactoring.md](refactoring.md) | リファクタリング模範解答（Service / FormRequest / 定数化 / N+1解消） |
+| [review-points.md](review-points.md) | レビュー観点・レガシーポイント一覧・採点の目安 |
+
+## 進行の目安
+
+1. まず受講生に [docs/ISSUES.md](../docs/ISSUES.md) を再現させる（調査力）
+2. 1 Issue = 1 ブランチ = 1 PR で修正させる（Git運用）
+3. [docs/PULL_REQUESTS.md](../docs/PULL_REQUESTS.md) のレビュー観点でレビューする
+4. バグ修正が一通り終わったら [refactoring.md](refactoring.md) の観点でリファクタリングへ
+
+## 難易度の目安
+
+- **易**: #15 CSV文字化け / #27 生年月日 / #21 enctype
+- **中**: #12 検索 / #18 削除 / #21 fillable / #30 メール / #14 ソート
+- **難**: #33 N+1・appends / #23 バリデーション設計 / #7 セキュリティ
