@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Member extends Model
 {
+    use HasFactory;
+
     protected $table = 'members';
 
     // mass assign 用。あとで項目を足したりしているうちに、少し歯抜けになっている。

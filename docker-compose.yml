@@ -1,7 +1,5 @@
 # 研修用の共通開発環境。
 # `docker compose up -d` で PHP8.0 / MySQL8 / Nginx / MailHog が同じバージョンで立ち上がります。
-version: "3.8"
-
 services:
   # PHP (Laravel 本体)
   app:
