@@ -143,6 +143,14 @@ class MemberController extends Controller
 
         $member->save();
 
+        // 登録履歴を残す
+        DB::table('member_logs')->insert([
+            'member_id' => $member->id,
+            'action' => 'created',
+            'detail' => '会員登録: ' . $member->name,
+            'created_at' => now(),
+        ]);
+
         // 登録完了メール
         if ($member->status == 1) {
             $data = [
