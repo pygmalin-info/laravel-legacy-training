@@ -6,7 +6,7 @@
 
 ---
 
-## E1. ポリシー（認可） 🆕
+## E1. ポリシー（認可） 
 
 ```php
 // app/Policies/MemberPolicy.php
@@ -80,7 +80,7 @@ private function sendNotification(Member $member, string $subject, string $body)
 ```
 - 戻り値・引数・プロパティに型を付ける。`declare(strict_types=1);` まで踏み込んでもよい。
 
-## E5. 列挙型（enum） 🆕 ※PHP8.1
+## E5. 列挙型（enum） ※PHP8.1
 **先に Docker を 8.1 へ**：`docker/php/Dockerfile` の `FROM php:8.0-fpm` を `php:8.1-fpm` に変更し、`composer.json` の `"php": "^8.0"` を `"^8.0|^8.1"` に（Laravel 8 は 8.1 で動作）。`docker compose up -d --build`。
 
 ```php
@@ -105,7 +105,7 @@ protected $casts = ['status' => MemberStatus::class, /* rank も同様に */];
 ```
 - rank / gender も同様。定数クラスで妥協する場合は [refactoring.md](refactoring.md) の定数節。
 
-## E6. リレーション先で絞り込む 🆕
+## E6. リレーション先で絞り込む
 ```php
 // Member.php
 public function logs() { return $this->hasMany(\App\Models\MemberLog::class); }
@@ -152,7 +152,7 @@ memory_limit=256M
 
 ---
 
-## E11. dd() 調査 🆕
+## E11. dd() 調査
 **仕込んだバグ**: `resources/views/members/create.blade.php` の ランク `<select name="member_rank">` に対し、`MemberController@store` は `$request->rank` を読んでいる。**名前が不一致**なので rank は常に未指定→`通常(1)` になる。
 
 **dd での特定手順（指導）**:

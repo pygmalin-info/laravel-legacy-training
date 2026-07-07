@@ -11,20 +11,31 @@
 
 ## A. 認可・バリデーション
 
-### E1. ポリシー（認可）を追加する 🆕scaffold
+### E1. ポリシー（認可）を追加する
 **現状**: ログインさえすれば **staff でも会員を削除・編集できてしまう**（権限差が効いていない）。
-**やること**: LarabelのPolicyを使って、権限を設定しましょう。
+**やること**: LaravelのPolicyを使って、権限を設定しましょう。
 **完了条件**: staffでログインすると削除ボタンが出ない/ URLを直接叩いても403になる/adminは今まで通り操作できる。
 
 ### E2. バリデーションをFormValidationに切り出す
-> Laravel でいう **Form Request Validation**。実体は `FormRequest` クラス（`php artisan make:request`）。
-> Controller直書きの検証を、フォーム専用のバリデーションクラスへ移す課題。
+<details>
+<summary>ヒント</summary>
+
+Laravelでは、この機能を **Form Request Validation** と呼びます。
+
+`php artisan make:request` で `FormRequest` クラスを作成し、Controllerに書いている入力チェックを、そのクラスへ移動します。
+
+</details>
 
 **現状**: `store` はバリデーションが Controller直書き（`$request->validate([...])`）、`update` は無し。
 **やること**: FormRequestを使って、入力チェックを専用クラスにまとめましょう。
 **完了条件**: 登録・編集の両方で入力チェックが効き、Controllerから検証コードが消える。
 
-> 参考: [teacher/refactoring.md](../teacher/refactoring.md) の FormRequest節（研修生は読んじゃダメ⚠️）
+<details>
+<summary>⚠️ 講師向けメモ（研修生は開かないでください）</summary>
+
+参考: [teacher/refactoring.md](../teacher/refactoring.md) の FormRequest節
+
+</details>
 
 ### E3. クエリパラメータのバリデーションを設定する
 **現状**: 一覧の `keyword` / `status` / `sort` / `order` / `page` をそのままで使っている。そのため、想定外の値が送られると問題が起こる可能性があります。
@@ -44,7 +55,14 @@
 **現状**: `status(0/1/2)` `rank(1/2/3)` `gender(1/2/3)` がマジックナンバー。
 **やること**: PHP 8.1 の `enum`（または定数クラス）に集約し、`MemberStatus::Active`のようにかけるようにしましょう。
 **完了条件**: マジックナンバーが消えていること。
-> ※ enumを使うため Dockerを PHP 8.1に上げる（[teacher/exercises-answers.md](../teacher/exercises-answers.md) 参照）。
+<details>
+<summary>⚠️ 講師向けメモ（研修生は開かないでください）</summary>
+
+enumを使用するため、この課題ではDockerのPHPバージョンを8.1以上に変更します。
+
+手順は `teacher/exercises-answers.md` を参照してください。
+
+</details>
 
 ### E6. リレーションを使ってデータを取得する 🆕scaffold
 **現状**: 会員の操作履歴テーブルがありますが、リレーションを活用していません。
@@ -60,7 +78,12 @@
 **現状**: 同じような処理が複数箇所にある。
 **やること**: Serviceなどを使って、共通の処理を1か所にまとめましょう。
 **完了条件**: 同じコードを書かなくてよくなる。
-> 参考: [teacher/refactoring.md](../teacher/refactoring.md) の Service節
+<details>
+<summary>⚠️ 講師向けメモ（研修生は開かないでください）</summary>
+
+参考: [teacher/refactoring.md](../teacher/refactoring.md) の Service節
+
+</details>
 
 ---
 
