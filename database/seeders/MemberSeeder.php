@@ -4,16 +4,18 @@ namespace Database\Seeders;
 
 use App\Models\Member;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class MemberSeeder extends Seeder
 {
     public function run()
     {
         // ページネーション・N+1 の確認用にある程度の件数を投入する
+        // （この60件には操作履歴 member_logs を付けない＝リレーション絞り込みの練習用）
         Member::factory()->count(60)->create();
 
         // 動作確認用の固定データ
-        Member::create([
+        $taro = Member::create([
             'name' => '教材 太郎',
             'name_kana' => 'キョウザイ タロウ',
             'email' => 'taro@example.com',
@@ -29,7 +31,7 @@ class MemberSeeder extends Seeder
         ]);
 
         // メモに HTML/スクリプトが入っているデータ（表示のされ方を確認する用）
-        Member::create([
+        $hanako = Member::create([
             'name' => 'テスト 花子',
             'name_kana' => 'テスト ハナコ',
             'email' => 'hanako@example.com',
@@ -58,6 +60,13 @@ class MemberSeeder extends Seeder
             'rank' => 1,
             'status' => 2,
             'memo' => '',
+        ]);
+
+        // 一部の会員にだけ操作履歴を残す（リレーション絞り込みの練習用データ）
+        DB::table('member_logs')->insert([
+            ['member_id' => $taro->id,   'action' => 'created', 'detail' => '初期登録', 'created_at' => now()],
+            ['member_id' => $taro->id,   'action' => 'updated', 'detail' => 'ランク変更', 'created_at' => now()],
+            ['member_id' => $hanako->id, 'action' => 'created', 'detail' => '初期登録', 'created_at' => now()],
         ]);
     }
 }

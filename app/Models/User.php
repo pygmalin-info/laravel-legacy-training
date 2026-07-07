@@ -13,10 +13,17 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    // 管理者かどうか（認可の判定で使う）
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
 }

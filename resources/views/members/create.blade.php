@@ -47,7 +47,7 @@
     </div>
     <div class="form-group">
         <label>ランク</label>
-        <select name="rank">
+        <select name="member_rank">
             <option value="">通常</option>
             <option value="gold">ゴールド</option>
             <option value="platinum">プラチナ</option>

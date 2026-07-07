@@ -16,6 +16,17 @@ class UserSeeder extends Seeder
             [
                 'name' => '管理者',
                 'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
+
+        // 一般スタッフ用アカウント（認可の練習用。今は admin と同じことができてしまう）
+        User::updateOrCreate(
+            ['email' => 'staff@example.com'],
+            [
+                'name' => '担当スタッフ',
+                'password' => Hash::make('password'),
+                'role' => 'staff',
             ]
         );
     }
