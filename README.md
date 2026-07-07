@@ -1,105 +1,37 @@
-# 会員管理システム（レガシー保守 研修教材）
+# PHP/Laravel レガシー保守・移行 研修教材シリーズ
 
-Laravel8で作られた社内向けの会員管理システムです。
-5〜8年ほど運用されてきた想定の、**あえて「良くない設計」を含んだ**保守練習用プロジェクトです。新規開発ではなく、**「既存システムを調査 → 修正 → 改善する」** という実務に近い流れを体験することが目的です。
+会員管理システムを題材にした、**実務に近い「調査・改修・移行」**を体験する研修教材集です。
+3つの教材で構成され、どれも**同じ会員管理システム**を扱うので、読み比べ・移行課題として繋がります。
 
----
+| 教材 | 内容 | 主に学ぶこと |
+|------|------|-------------|
+| [laravel-legacy/](laravel-legacy/) | Laravel 8 のレガシー保守 | Fat Controller・N+1・意図的バグ14個の調査と改修 |
+| [plain-php-legacy/](plain-php-legacy/) | 素PHP（FW無し）のレガシー改修 | SQLインジェクション・XSS など**セキュリティ**中心の改修 |
+| [php-to-laravel/](php-to-laravel/) | 素PHP → Laravel 移行 | レガシーPHPを Laravel に載せ替える移行案件 |
 
-## 機能
+## どれから？
 
-- ログイン
-- 会員一覧 / 検索
-- 会員登録 / 編集 / 削除
-- CSV出力
-- メール送信
+- **Laravel は学習済み → 改修から** … `laravel-legacy/`
+- **素PHPの怖さ（セキュリティ）を知りたい** … `plain-php-legacy/`
+- **移行案件を体験したい** … `php-to-laravel/`（`plain-php-legacy` を移行元に使う）
 
----
+## 各教材の起動
 
-## 動作環境
+それぞれのフォルダに `README.md` と Docker 一式があります（ポートは重複しないよう分離）。
 
-**Docker で全員同じ環境になります**（PHP・MySQL・メールのバージョンを揃えるため）。
-
-- Docker / Docker Compose（Docker Desktop でOK）
-
-> ローカルに PHP や MySQL を入れる必要はありません。中身のバージョンは以下で固定です。
->
-> | 用途 | バージョン | コンテナ |
-> |------|-----------|----------|
-> | PHP  | 8.0 (fpm) | `app` |
-> | Web  | Nginx 1.25 | `web` |
-> | DB   | MySQL 8.0 | `db` |
-> | メール確認 | MailHog | `mailhog` |
-
----
-
-## セットアップ（Docker）
+| 教材 | アプリ | メール確認 |
+|------|--------|-----------|
+| laravel-legacy | http://localhost:8000 | http://localhost:8025 |
+| plain-php-legacy | http://localhost:8080 | http://localhost:8026 |
 
 ```bash
-# 1. コンテナを起動（初回はイメージのビルドが走ります）
-docker compose up -d --build
-
-# 2. .env を用意
-cp .env.example .env
-
-# 3. 依存パッケージのインストール〜初期化（すべて app コンテナ内で実行）
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --seed
+cd laravel-legacy && docker compose up -d      # Laravel版
+cd plain-php-legacy && docker compose up -d     # 素PHP版
 ```
 
-- アプリ: http://localhost:8000
-- 送信メールの確認（MailHog 受信箱）: http://localhost:8025
+共通ログイン: `admin@example.com` / `password`
 
-### よく使うコマンド
+## 解答について
 
-```bash
-docker compose exec app php artisan ...   # artisan コマンド
-docker compose exec app composer ...      # composer コマンド
-docker compose exec app bash              # コンテナに入る
-docker compose down                       # 停止
-docker compose down -v                    # 停止＋DBデータも削除（作り直したいとき）
-```
-
-> `.env` の DB 接続先は Docker 用に `DB_HOST=db` / `member` / `secret` で設定済みです。
-> DB を初期状態に戻したいときは `docker compose exec app php artisan migrate:fresh --seed`。
-
-
-### ログイン
-
-| メールアドレス | パスワード |
-|----------------|-----------|
-| admin@example.com | password |
-
----
-
-## この教材の進め方
-
-1. **原因調査** — [docs/ISSUES.md](docs/ISSUES.md) の不具合を再現し、原因を特定する
-2. **バグ修正** — 1 Issue = 1 ブランチ で修正する
-3. **リファクタリング** — [docs/PULL_REQUESTS.md](docs/PULL_REQUESTS.md) のレビュー観点を参考に改善する
-4. **PR作成** — 修正内容と確認手順を書いて Pull Request を出す
-5. **レビュー対応** — レビューコメントに返信・修正する
-6. **マージ**
-
-> ⚠️ このコードには意図的に多くの問題（バグ・悪い設計）が含まれています。
-> 「なぜ動かないのか」「なぜ危険なのか」を自分の言葉で説明できることを目指しましょう。
-
----
-
-## 修正しなくてよいもの
-
-- **DB設計 / マイグレーション** … 概ね妥当です。基本的に変更不要です。
-- **Laravel 標準の枠組み**（Kernel, Provider など）… 触る必要はありません。
-
----
-
-## ディレクトリ
-
-```
-app/Http/Controllers/MemberController.php  … 中心。かなり長い（Fat Controller）
-app/Models/Member.php
-resources/views/members/                    … 一覧・登録・編集・詳細
-database/seeders/                           … 動作確認用データ
-docs/                                        … Issue と PR レビュー
-teacher/                                     … 解答（受講生は見ないこと）
-```
+各教材の `teacher/` に解答（バグ一覧・原因・修正コード・レビュー観点）を置いています。
+**受講生には見せないでください。**
