@@ -1,7 +1,8 @@
 # バグ一覧・原因・修正（解答）
 
-仕込んであるバグは全部で **14件**（Issue 10件にまとめて掲載）。
+仕込んであるバグは全部で **16件**（Issue 12件にまとめて掲載）。
 対応表 → 各バグの「症状 / 原因 / 修正」の順にまとめています。
+（#34・#35 はレビュー（kishida）指摘で後から追加した練習バグ）
 
 ## Issue ↔ バグ 対応表
 
@@ -21,6 +22,8 @@
 | #33 | 10. ページ送りで検索条件が消える（appends 漏れ） | `index.blade.php` |
 | #7 | 6. SQLインジェクション（Raw SQL 連結） | `MemberController@index` |
 | #7 | 7. XSS（`{!! !!}` で memo 出力） | `show.blade.php` |
+| #34 | 15. メモの改行が反映されない（nl2br 無し） | `index.blade.php` / `show.blade.php` |
+| #35 | 16. 登録時のトランザクション漏れ（不整合） | `MemberController@store` |
 
 ---
 
@@ -348,3 +351,76 @@ foreach ($members as $m) {
 ```
 
 > `show()` にも同種のクエリがあるが、単発なので優先度は低い。
+
+---
+
+## 15. メモの改行が反映されない（#34）
+
+**症状**: メモを複数行で保存しても、一覧・詳細で改行されず1行にくっつく。
+
+**原因**: メモをそのまま出力しているだけで、改行（`\n`）を `<br>` に変換していない。HTML は素の改行を無視するため潰れて見える。
+
+```blade
+{{-- index.blade.php Before（エスケープはされているが改行が消える） --}}
+<td class="memo-cell">{{ $m->memo }}</td>
+
+{{-- show.blade.php Before（生出力なので XSS も併発。#7 と同じ箇所） --}}
+<td>{!! $member->memo !!}</td>
+```
+
+**修正**: `nl2br()` で改行を `<br>` に。**必ず先に `e()` でエスケープ**してから `nl2br()` する（エスケープ→改行変換の順。逆にすると XSS）。
+
+```blade
+{{-- After（一覧・詳細とも） --}}
+<td class="memo-cell">{!! nl2br(e($m->memo)) !!}</td>
+...
+<td>{!! nl2br(e($member->memo)) !!}</td>
+```
+
+- こうすると **#7 の XSS（`{!! $member->memo !!}` 生出力）も同時に解消**される（`e()` でエスケープするため）。#7 と #34 は同じ箇所なのでセットで直すのが正解。
+- CSS で `white-space: pre-wrap;` を使う手もあるが、出力エスケープ（`e()`）は別途必須。
+
+---
+
+## 16. 登録時のトランザクション漏れ（#35）
+
+**症状**: 会員登録の途中でエラーが起きると、**会員だけ作られて登録履歴（member_logs）が無い**など、データの整合が崩れる。
+
+**原因**: `store()` が「会員の保存」と「履歴の保存」という**2つの書き込みをトランザクションで囲っていない**。後半で例外が出ても前半はコミット済みのため、片方だけ残る。
+
+```php
+// Before（store 内。囲いが無い）
+$member->save();                          // ← ①会員を保存
+
+DB::table('member_logs')->insert([        // ← ②ここで例外が出ると…
+    'member_id' => $member->id,
+    'action' => 'created',
+    'detail' => '会員登録: ' . $member->name,
+    'created_at' => now(),
+]);                                       //    ①だけ残って不整合
+```
+
+**修正**: 関連する書き込みを `DB::transaction()` で囲む（すべて成功 or すべてロールバック）。
+
+```php
+// After
+DB::transaction(function () use ($member, $request) {
+    $member->save();
+    DB::table('member_logs')->insert([
+        'member_id' => $member->id,
+        'action' => 'created',
+        'detail' => '会員登録: ' . $member->name,
+        'created_at' => now(),
+    ]);
+});
+```
+
+- アバターの `move` や `Mail::send` など、**ロールバックできない副作用（ファイル・メール）はトランザクションの外**に出すのが定石（失敗時に取り消せないため）。
+- `update`／`destroy` でも複数書き込みをするなら同様に囲う。
+
+**再現のさせ方（指導用）**: `member_logs` を一時的に落とす／リネームして登録すると、②で例外→会員だけ残るのが確認できる。
+```sql
+RENAME TABLE member_logs TO member_logs_tmp;  -- 登録を試す → 会員だけ作られる
+RENAME TABLE member_logs_tmp TO member_logs;  -- 戻す
+```
+修正後は同じ操作で**会員も作られない**（ロールバックされる）ことを確認させる。

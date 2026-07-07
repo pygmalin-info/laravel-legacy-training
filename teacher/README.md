@@ -7,7 +7,7 @@
 
 | ファイル | 内容 |
 |----------|------|
-| [bug-list.md](bug-list.md) | バグ14件の一覧・症状・原因・修正コード（Issue との対応表つき） |
+| [bug-list.md](bug-list.md) | バグ16件の一覧・症状・原因・修正コード（Issue との対応表つき） |
 | [refactoring.md](refactoring.md) | リファクタリング模範解答（Service / FormRequest / 定数化 / N+1解消） |
 | [review-points.md](review-points.md) | レビュー観点・レガシーポイント一覧・採点の目安 |
 
@@ -22,4 +22,6 @@
 
 |易しい|中|難しい|
 |---|---|---|
-|#15 CSV文字化け<br>#27 生年月日<br>#21 enctype|#12 検索<br>#18 削除<br>#21 fillable<br>#30 メール<br>#14 ソート|#33 N+1・appends<br>#23 バリデーション設計<br>#7 セキュリティ
+|#15 CSV文字化け<br>#27 生年月日<br>#21 enctype<br>#34 改行表示|#12 検索<br>#18 削除<br>#21 fillable<br>#30 メール<br>#14 ソート|#33 N+1・appends<br>#23 バリデーション設計<br>#7 セキュリティ<br>#35 トランザクション
+
+※ #34・#35 はレビュー（kishida）指摘で追加。
