@@ -32,6 +32,7 @@
             <th>同県会員</th>
             <th><a href="/members?sort=rank&order=asc">ランク</a></th>
             <th>ステータス</th>
+            <th>メモ</th>
             <th>操作</th>
         </tr>
     </thead>
@@ -55,6 +56,7 @@
                 @else 退会
                 @endif
             </td>
+            <td class="memo-cell">{{ $m->memo }}</td>
             <td>
                 <a href="/members/{{ $m->id }}/edit">編集</a>
                 <a href="/members/{{ $m->id }}" onclick="return confirm('削除しますか？')">削除</a>
