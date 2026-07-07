@@ -1,0 +1,45 @@
+# 素PHP版の開発環境。`docker compose up -d --build` で起動。
+# ポートは Laravel 版(8000/3306/8025)と衝突しないようにずらしています。
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: php_legacy_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: php_legacy_db
+    environment:
+      MYSQL_DATABASE: member_management
+      MYSQL_USER: member
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+      TZ: Asia/Tokyo
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: php_legacy_mailhog
+    ports:
+      - "8026:8025"
+
+volumes:
+  db-data:

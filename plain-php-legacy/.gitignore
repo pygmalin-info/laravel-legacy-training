@@ -1,0 +1,3 @@
+# アップロードされた画像はコミットしない（.gitkeep は残す）
+/public/uploads/*
+!/public/uploads/.gitkeep

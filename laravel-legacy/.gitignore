@@ -1,0 +1,10 @@
+/vendor
+/node_modules
+/public/hot
+/public/storage
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
+/storage/*.key
+.env
+.env.backup
+.phpunit.result.cache
