@@ -12,3 +12,7 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
